@@ -78,6 +78,30 @@
       </div>
     </div>
 
+    <!-- FIGHTER & DEFENCE INFRASTRUCTURE -->
+    <div class="news-section">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-title-group">
+            <span class="section-icon">🛩️</span>
+            <h2>Fighter Capability &amp; Defence Infrastructure</h2>
+            <span class="section-cap">Top 3 stories</span>
+          </div>
+          <div class="section-controls">
+            <div class="mode-toggle">
+              <button class="btn-mode active" data-section="fighter" data-mode="daily">Daily</button>
+              <button class="btn-mode" data-section="fighter" data-mode="weekly">Weekly</button>
+            </div>
+            <button class="btn-section-refresh" data-section="fighter">&#8635; Refresh</button>
+          </div>
+        </div>
+        <p class="fallback-notice" id="notice-fighter" hidden>No stories today — showing this week's top results.</p>
+        <div class="cards-row" id="grid-fighter">
+          <div class="section-loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- FUNDING -->
     <div class="news-section">
       <div class="container">
@@ -149,9 +173,42 @@
           'national defence', 'dnd', 'armed forces',
           'fighter jet', 'f-35', 'warship', 'frigate', 'submarine',
           'defence spending', 'defence budget', 'defence procurement',
-          'bill blair', 'minister of national defence',
-          'military exercise', 'joint operation',
+          'minister of national defence', 'chief of the defence staff',
+          'military exercise', 'joint operation', 'nato ally',
+          'continental defence', 'arctic sovereignty',
         ],
+      },
+      {
+        id:  'fighter',
+        max: 3,
+        match(article) {
+          const hay = `${article.title} ${article.desc}`.toLowerCase();
+
+          // Fighter aircraft & capability programs
+          const hasFighter = [
+            'f-35', 'cf-18', 'hornet', 'fighter jet', 'fighter aircraft',
+            'fighter capability', 'fighter program', 'fighter replacement',
+            'lockheed martin', 'boeing f/a-18', 'saab gripen',
+            'rcaf fighter', 'air force fighter', 'tactical aviation',
+            '4 wing', 'cold lake', '3 wing', 'bagotville',
+            'norad modernization', 'north warning system',
+            'air defence', 'aerospace defence', 'air sovereignty',
+          ].some(t => hay.includes(t));
+
+          // Defence infrastructure & capital projects
+          const hasInfra = [
+            'defence infrastructure', 'military infrastructure',
+            'base construction', 'hangar', 'airfield', 'runway',
+            'dnd project', 'capital project', 'defence project',
+            'adm mat', 'materiel', 'pspc', 'public services and procurement',
+            'defence acquisition', 'defence contract', 'capability development',
+            'statement of requirements', 'request for proposal', 'rfp',
+            'treasury board', 'project approval', 'defence policy',
+            'strong, secure, engaged', 'defence capability',
+          ].some(t => hay.includes(t));
+
+          return hasFighter || hasInfra;
+        },
       },
       {
         id:  'funding',
@@ -186,10 +243,10 @@
       url => `https://thingproxy.freeboard.io/fetch/${url}`,
     ];
 
-    const CACHE_KEY = 'cbc_dashboard_v8';
+    const CACHE_KEY = 'cbc_dashboard_v9';
 
     /* ── STATE ──────────────────────────────────────────── */
-    const sectionModes = { global: 'daily', military: 'daily', funding: 'daily' };
+    const sectionModes = { global: 'daily', military: 'daily', fighter: 'daily', funding: 'daily' };
     let articlePool = [];
 
     /* ── ELEMENTS ───────────────────────────────────────── */
