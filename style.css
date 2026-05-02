@@ -323,6 +323,11 @@ main {
   flex-shrink: 0;
 }
 
+.card-source--bbc {
+  background: #BB1919;
+  color: #fff;
+}
+
 .card-date {
   font-size: .75rem;
   color: var(--muted-light);
