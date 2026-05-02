@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CBC News Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <span class="logo-cbc">CBC</span>
+        <span class="logo-label">News Dashboard</span>
+      </div>
+      <div class="header-right">
+        <span class="next-refresh" id="next-refresh">Next refresh: —</span>
+        <span class="last-fetched" id="last-fetched"></span>
+        <button class="btn-refresh-all" id="btn-refresh-all">&#8635; Refresh All</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- GLOBAL IMPACT -->
+    <div class="news-section">
+      <div class="section-heading">
+        <div class="section-title-group">
+          <span class="section-icon">🌍</span>
+          <h2>Biggest Impact Globally</h2>
+          <span class="section-cap">Top 3 stories</span>
+        </div>
+        <div class="section-controls">
+          <div class="mode-toggle">
+            <button class="btn-mode active" data-section="global" data-mode="daily">Daily</button>
+            <button class="btn-mode" data-section="global" data-mode="weekly">Weekly</button>
+          </div>
+          <button class="btn-section-refresh" data-section="global">&#8635; Refresh</button>
+        </div>
+      </div>
+      <p class="fallback-notice" id="notice-global" hidden>No stories today — showing this week's top results.</p>
+      <div class="cards-row" id="grid-global">
+        <div class="section-loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- MILITARY -->
+    <div class="news-section">
+      <div class="section-heading">
+        <div class="section-title-group">
+          <span class="section-icon">✈️</span>
+          <h2>RCAF, NORAD &amp; Canadian Military</h2>
+          <span class="section-cap">Top 3 stories</span>
+        </div>
+        <div class="section-controls">
+          <div class="mode-toggle">
+            <button class="btn-mode active" data-section="military" data-mode="daily">Daily</button>
+            <button class="btn-mode" data-section="military" data-mode="weekly">Weekly</button>
+          </div>
+          <button class="btn-section-refresh" data-section="military">&#8635; Refresh</button>
+        </div>
+      </div>
+      <p class="fallback-notice" id="notice-military" hidden>No stories today — showing this week's top results.</p>
+      <div class="cards-row" id="grid-military">
+        <div class="section-loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- FUNDING -->
+    <div class="news-section">
+      <div class="section-heading">
+        <div class="section-title-group">
+          <span class="section-icon">💰</span>
+          <h2>Federal Government Funding Projects</h2>
+          <span class="section-cap">Top 3 stories</span>
+        </div>
+        <div class="section-controls">
+          <div class="mode-toggle">
+            <button class="btn-mode active" data-section="funding" data-mode="daily">Daily</button>
+            <button class="btn-mode" data-section="funding" data-mode="weekly">Weekly</button>
+          </div>
+          <button class="btn-section-refresh" data-section="funding">&#8635; Refresh</button>
+        </div>
+      </div>
+      <p class="fallback-notice" id="notice-funding" hidden>No stories today — showing this week's top results.</p>
+      <div class="cards-row" id="grid-funding">
+        <div class="section-loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Stories sourced from <strong>CBC News</strong> RSS. Auto-refreshes daily at 9:00 AM. Not affiliated with CBC/Radio-Canada.</p>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+
+    /* ── CONFIG ─────────────────────────────────────────── */
+    const FEEDS = [
+      'https://www.cbc.ca/cmlink/rss-topstories',
+      'https://www.cbc.ca/cmlink/rss-world',
+      'https://www.cbc.ca/cmlink/rss-canada',
+      'https://www.cbc.ca/cmlink/rss-politics',
+      'https://www.cbc.ca/cmlink/rss-business',
+    ];
+
+    const SECTIONS = [
+      {
+        id:       'global',
+        max:      3,
+        keywords: [
+          'war', 'invasion', 'conflict', 'ceasefire', 'airstrike', 'missile',
+          'earthquake', 'hurricane', 'tsunami', 'flood', 'wildfire',
+          'pandemic', 'outbreak', 'epidemic',
+          'nuclear', 'sanctions', 'united nations', 'nato', 'g7', 'g20',
+          'climate change', 'global summit', 'world leaders', 'coup',
+          'genocide', 'refugee crisis', 'diplomatic', 'treaty', 'tariff',
+        ],
+      },
+      {
+        id:       'military',
+        max:      3,
+        keywords: [
+          'rcaf', 'norad', 'royal canadian air force',
+          'canadian forces', 'canadian military', 'canadian army',
+          'royal canadian navy', 'department of national defence',
+          'national defence', 'dnd', 'armed forces',
+          'fighter jet', 'f-35', 'warship', 'frigate', 'submarine',
+          'defence spending', 'defence budget', 'defence procurement',
+          'bill blair', 'minister of national defence',
+          'military exercise', 'joint operation',
+        ],
+      },
+      {
+        id:  'funding',
+        max: 3,
+        match(article) {
+          const hay = `${article.title} ${article.desc}`.toLowerCase();
+
+          // 1. Exclude regulatory/enforcement stories (fines, penalties, violations)
+          if ([' fine', 'penalt', 'violat', 'lawsuit', 'charges', 'fraud',
+               'court order', 'levy', 'levied'].some(t => hay.includes(t))) return false;
+
+          // 2. Exclude sports-related funding (grants to teams/leagues/athletes)
+          if (['soccer', 'hockey', 'football', 'baseball', 'lacrosse', 'curling',
+               ' nhl', ' nba', ' cfl', ' mls', ' mlb',
+               'sport ', 'sports ', 'athlete', 'olympic', 'arena', 'stadium',
+               'rink'].some(t => hay.includes(t))) return false;
+
+          // 3. Must have a federal government actor AND a project/investment term
+          const hasFederal  = ['federal', 'ottawa', 'parliament', 'prime minister',
+                               ' feds', 'carney', 'trudeau'].some(t => hay.includes(t));
+          const hasSpending = ['infrastructure', 'invest', 'billion', 'million',
+                               'funding', 'grant', 'allocat', 'construct', 'build',
+                               'development'].some(t => hay.includes(t));
+          return hasFederal && hasSpending;
+        },
+      },
+    ];
+
+    const PROXIES = [
+      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      url => `https://thingproxy.freeboard.io/fetch/${url}`,
+    ];
+
+    const CACHE_KEY = 'cbc_dashboard_v7';
+
+    /* ── STATE ──────────────────────────────────────────── */
+    const sectionModes = { global: 'daily', military: 'daily', funding: 'daily' };
+    let articlePool = [];
+
+    /* ── ELEMENTS ───────────────────────────────────────── */
+    const nextRefreshEl = document.getElementById('next-refresh');
+    const lastFetchedEl = document.getElementById('last-fetched');
+    const refreshAllBtn = document.getElementById('btn-refresh-all');
+
+    /* ── TIME HELPERS ───────────────────────────────────── */
+    function getLastScheduledRefresh() {
+      const t9 = new Date();
+      t9.setHours(9, 0, 0, 0);
+      if (new Date() < t9) t9.setDate(t9.getDate() - 1);
+      return t9;
+    }
+
+    function getNextScheduledRefresh() {
+      const t9 = new Date();
+      t9.setHours(9, 0, 0, 0);
+      if (new Date() >= t9) t9.setDate(t9.getDate() + 1);
+      return t9;
+    }
+
+    function getCutoff(mode) {
+      if (mode === 'weekly') {
+        const d = new Date();
+        d.setDate(d.getDate() - 7);
+        return d;
+      }
+      return getLastScheduledRefresh();
+    }
+
+    /* ── CACHE ──────────────────────────────────────────── */
+    function loadCache() {
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        const { ts, articles } = JSON.parse(raw);
+        if (new Date(ts) >= getLastScheduledRefresh()) return { ts, articles };
+      } catch (_) {}
+      return null;
+    }
+
+    function saveCache(articles) {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: new Date().toISOString(), articles }));
+    }
+
+    /* ── FETCH ──────────────────────────────────────────── */
+    async function fetchWithProxy(url) {
+      for (const proxy of PROXIES) {
+        try {
+          const res  = await fetch(proxy(url));
+          if (!res.ok) continue;
+          const text = await res.text();
+          if (text.includes('<item') || text.includes('<entry')) return text;
+        } catch (_) { continue; }
+      }
+      throw new Error(`All proxies failed for ${url}`);
+    }
+
+    function parseRSS(xmlText) {
+      const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
+      return Array.from(doc.querySelectorAll('item')).map(item => ({
+        title:   item.querySelector('title')?.textContent?.trim()   ?? '',
+        link:    item.querySelector('link')?.textContent?.trim()    ?? '',
+        pubDate: item.querySelector('pubDate')?.textContent?.trim() ?? '',
+        desc:    (item.querySelector('description')?.textContent ?? '')
+                   .replace(/<[^>]*>/g, '').trim().slice(0, 320),
+      })).filter(i => i.title && i.link);
+    }
+
+    async function fetchAllFeeds() {
+      const results = await Promise.allSettled(FEEDS.map(fetchWithProxy));
+      const all     = results
+        .filter(r => r.status === 'fulfilled')
+        .flatMap(r => parseRSS(r.value));
+      const seen = new Set();
+      const pool = all.filter(a => {
+        if (seen.has(a.link)) return false;
+        seen.add(a.link);
+        return true;
+      });
+      pool.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+      return pool;
+    }
+
+    /* ── FILTER & RENDER ────────────────────────────────── */
+    function matches(article, section) {
+      if (section.match) return section.match(article);
+      const hay = `${article.title} ${article.desc}`.toLowerCase();
+      return section.keywords.some(kw => hay.includes(kw.toLowerCase()));
+    }
+
+    function renderSection(section) {
+      const mode    = sectionModes[section.id];
+      const grid    = document.getElementById(`grid-${section.id}`);
+      const notice  = document.getElementById(`notice-${section.id}`);
+      const cutoff  = getCutoff(mode);
+
+      let filtered = articlePool
+        .filter(a => !a.pubDate || new Date(a.pubDate) >= cutoff)
+        .filter(a => matches(a, section))
+        .slice(0, section.max);
+
+      let isFallback = false;
+      if (filtered.length === 0 && mode === 'daily') {
+        const weeklyCutoff = getCutoff('weekly');
+        filtered = articlePool
+          .filter(a => !a.pubDate || new Date(a.pubDate) >= weeklyCutoff)
+          .filter(a => matches(a, section))
+          .slice(0, section.max);
+        isFallback = true;
+      }
+
+      notice.hidden = !(isFallback && filtered.length > 0);
+      grid.innerHTML = '';
+
+      if (!filtered.length) {
+        grid.innerHTML = '<p class="empty">No matching stories found this week.</p>';
+        return;
+      }
+
+      filtered.forEach(a => {
+        const pub = a.pubDate
+          ? new Date(a.pubDate).toLocaleDateString('en-CA', { weekday:'short', month:'short', day:'numeric' })
+          : '';
+        const card = document.createElement('a');
+        card.className = 'card';
+        card.href      = a.link;
+        card.target    = '_blank';
+        card.rel       = 'noopener noreferrer';
+        card.innerHTML = `
+          <div class="card-meta">
+            <span class="card-source">CBC News</span>
+            ${pub ? `<span class="card-date">${pub}</span>` : ''}
+          </div>
+          <h3>${a.title}</h3>
+          ${a.desc ? `<p>${a.desc}…</p>` : ''}
+          <span class="card-read">Read story →</span>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderAll() {
+      SECTIONS.forEach(renderSection);
+    }
+
+    function setSectionLoading(sectionId) {
+      document.getElementById(`grid-${sectionId}`).innerHTML =
+        '<div class="section-loading"><div class="spinner"></div></div>';
+      const notice = document.getElementById(`notice-${sectionId}`);
+      if (notice) notice.hidden = true;
+    }
+
+    function updateHeader(ts) {
+      const next    = getNextScheduledRefresh();
+      const isToday = next.toDateString() === new Date().toDateString();
+      nextRefreshEl.textContent = `Next refresh: ${isToday ? 'today' : 'tomorrow'} at 9:00 AM`;
+      if (ts) lastFetchedEl.textContent = `Fetched: ${new Date(ts).toLocaleTimeString()}`;
+    }
+
+    function setAllBtnsDisabled(disabled) {
+      refreshAllBtn.disabled = disabled;
+      refreshAllBtn.textContent = disabled ? '… loading' : '↻ Refresh All';
+      document.querySelectorAll('.btn-section-refresh').forEach(b => {
+        b.disabled = disabled;
+      });
+    }
+
+    /* ── LOAD (full fetch) ──────────────────────────────── */
+    async function loadFresh(triggeredBySectionId) {
+      setAllBtnsDisabled(true);
+
+      if (triggeredBySectionId) {
+        setSectionLoading(triggeredBySectionId);
+      } else {
+        SECTIONS.forEach(s => setSectionLoading(s.id));
+      }
+
+      try {
+        articlePool = await fetchAllFeeds();
+        saveCache(articlePool);
+        updateHeader(new Date().toISOString());
+        renderAll();
+      } catch (err) {
+        const msg = `<p class="empty error">⚠ Could not load: ${err.message}</p>`;
+        if (triggeredBySectionId) {
+          document.getElementById(`grid-${triggeredBySectionId}`).innerHTML = msg;
+        } else {
+          SECTIONS.forEach(s => { document.getElementById(`grid-${s.id}`).innerHTML = msg; });
+        }
+        console.error('[CBC Dashboard]', err);
+      } finally {
+        setAllBtnsDisabled(false);
+      }
+    }
+
+    /* ── INIT & EVENTS ──────────────────────────────────── */
+    // Mode toggle buttons
+    document.querySelectorAll('.btn-mode').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sectionId = btn.dataset.section;
+        const mode      = btn.dataset.mode;
+        sectionModes[sectionId] = mode;
+
+        // Update active state within this toggle group
+        btn.closest('.mode-toggle').querySelectorAll('.btn-mode').forEach(b => {
+          b.classList.toggle('active', b === btn);
+        });
+
+        renderSection(SECTIONS.find(s => s.id === sectionId));
+      });
+    });
+
+    // Per-section refresh
+    document.querySelectorAll('.btn-section-refresh').forEach(btn => {
+      btn.addEventListener('click', () => loadFresh(btn.dataset.section));
+    });
+
+    // Refresh all
+    refreshAllBtn.addEventListener('click', () => loadFresh(null));
+
+    // 9am auto-refresh
+    function scheduleRefresh() {
+      const ms = getNextScheduledRefresh() - Date.now();
+      setTimeout(() => { loadFresh(null); scheduleRefresh(); }, ms);
+    }
+
+    // Startup
+    updateHeader(null);
+    scheduleRefresh();
+
+    const cached = loadCache();
+    if (cached) {
+      articlePool = cached.articles;
+      updateHeader(cached.ts);
+      renderAll();
+    } else {
+      loadFresh(null);
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
