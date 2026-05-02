@@ -106,7 +106,7 @@
 
   <footer class="site-footer">
     <div class="container">
-      <p>Stories sourced from <strong>CBC News</strong> RSS. Auto-refreshes daily at 9:00 AM. Not affiliated with CBC/Radio-Canada.</p>
+      <p>Stories sourced from <strong>CBC News</strong> &amp; <strong>BBC News</strong> RSS. Auto-refreshes daily at 9:00 AM. Not affiliated with CBC/Radio-Canada or BBC.</p>
     </div>
   </footer>
 
@@ -115,11 +115,15 @@
 
     /* ── CONFIG ─────────────────────────────────────────── */
     const FEEDS = [
-      'https://www.cbc.ca/cmlink/rss-topstories',
-      'https://www.cbc.ca/cmlink/rss-world',
-      'https://www.cbc.ca/cmlink/rss-canada',
-      'https://www.cbc.ca/cmlink/rss-politics',
-      'https://www.cbc.ca/cmlink/rss-business',
+      { url: 'https://www.cbc.ca/cmlink/rss-topstories', source: 'CBC News' },
+      { url: 'https://www.cbc.ca/cmlink/rss-world',      source: 'CBC News' },
+      { url: 'https://www.cbc.ca/cmlink/rss-canada',     source: 'CBC News' },
+      { url: 'https://www.cbc.ca/cmlink/rss-politics',   source: 'CBC News' },
+      { url: 'https://www.cbc.ca/cmlink/rss-business',   source: 'CBC News' },
+      { url: 'https://feeds.bbci.co.uk/news/rss.xml',         source: 'BBC News' },
+      { url: 'https://feeds.bbci.co.uk/news/world/rss.xml',   source: 'BBC News' },
+      { url: 'https://feeds.bbci.co.uk/news/politics/rss.xml', source: 'BBC News' },
+      { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', source: 'BBC News' },
     ];
 
     const SECTIONS = [
@@ -182,7 +186,7 @@
       url => `https://thingproxy.freeboard.io/fetch/${url}`,
     ];
 
-    const CACHE_KEY = 'cbc_dashboard_v7';
+    const CACHE_KEY = 'cbc_dashboard_v8';
 
     /* ── STATE ──────────────────────────────────────────── */
     const sectionModes = { global: 'daily', military: 'daily', funding: 'daily' };
@@ -245,9 +249,10 @@
       throw new Error(`All proxies failed for ${url}`);
     }
 
-    function parseRSS(xmlText) {
+    function parseRSS(xmlText, source) {
       const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
       return Array.from(doc.querySelectorAll('item')).map(item => ({
+        source,
         title:   item.querySelector('title')?.textContent?.trim()   ?? '',
         link:    item.querySelector('link')?.textContent?.trim()    ?? '',
         pubDate: item.querySelector('pubDate')?.textContent?.trim() ?? '',
@@ -257,10 +262,9 @@
     }
 
     async function fetchAllFeeds() {
-      const results = await Promise.allSettled(FEEDS.map(fetchWithProxy));
+      const results = await Promise.allSettled(FEEDS.map(f => fetchWithProxy(f.url)));
       const all     = results
-        .filter(r => r.status === 'fulfilled')
-        .flatMap(r => parseRSS(r.value));
+        .flatMap((r, i) => r.status === 'fulfilled' ? parseRSS(r.value, FEEDS[i].source) : []);
       const seen = new Set();
       const pool = all.filter(a => {
         if (seen.has(a.link)) return false;
@@ -318,7 +322,7 @@
         card.rel       = 'noopener noreferrer';
         card.innerHTML = `
           <div class="card-meta">
-            <span class="card-source">CBC News</span>
+            <span class="card-source card-source--${a.source === 'BBC News' ? 'bbc' : 'cbc'}">${a.source}</span>
             ${pub ? `<span class="card-date">${pub}</span>` : ''}
           </div>
           <h3>${a.title}</h3>
