@@ -23,71 +23,82 @@
     </div>
   </header>
 
-  <main class="container">
+  <div class="hero-banner">
+    <h1>CBC News Dashboard</h1>
+    <p>Today's most important Canadian and global stories, curated and refreshed every morning.</p>
+  </div>
+
+  <main>
 
     <!-- GLOBAL IMPACT -->
     <div class="news-section">
-      <div class="section-heading">
-        <div class="section-title-group">
-          <span class="section-icon">🌍</span>
-          <h2>Biggest Impact Globally</h2>
-          <span class="section-cap">Top 3 stories</span>
-        </div>
-        <div class="section-controls">
-          <div class="mode-toggle">
-            <button class="btn-mode active" data-section="global" data-mode="daily">Daily</button>
-            <button class="btn-mode" data-section="global" data-mode="weekly">Weekly</button>
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-title-group">
+            <span class="section-icon">🌍</span>
+            <h2>Biggest Impact Globally</h2>
+            <span class="section-cap">Top 3 stories</span>
           </div>
-          <button class="btn-section-refresh" data-section="global">&#8635; Refresh</button>
+          <div class="section-controls">
+            <div class="mode-toggle">
+              <button class="btn-mode active" data-section="global" data-mode="daily">Daily</button>
+              <button class="btn-mode" data-section="global" data-mode="weekly">Weekly</button>
+            </div>
+            <button class="btn-section-refresh" data-section="global">&#8635; Refresh</button>
+          </div>
         </div>
-      </div>
-      <p class="fallback-notice" id="notice-global" hidden>No stories today — showing this week's top results.</p>
-      <div class="cards-row" id="grid-global">
-        <div class="section-loading"><div class="spinner"></div></div>
+        <p class="fallback-notice" id="notice-global" hidden>No stories today — showing this week's top results.</p>
+        <div class="cards-row" id="grid-global">
+          <div class="section-loading"><div class="spinner"></div></div>
+        </div>
       </div>
     </div>
 
     <!-- MILITARY -->
     <div class="news-section">
-      <div class="section-heading">
-        <div class="section-title-group">
-          <span class="section-icon">✈️</span>
-          <h2>RCAF, NORAD &amp; Canadian Military</h2>
-          <span class="section-cap">Top 3 stories</span>
-        </div>
-        <div class="section-controls">
-          <div class="mode-toggle">
-            <button class="btn-mode active" data-section="military" data-mode="daily">Daily</button>
-            <button class="btn-mode" data-section="military" data-mode="weekly">Weekly</button>
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-title-group">
+            <span class="section-icon">✈️</span>
+            <h2>RCAF, NORAD &amp; Canadian Military</h2>
+            <span class="section-cap">Top 3 stories</span>
           </div>
-          <button class="btn-section-refresh" data-section="military">&#8635; Refresh</button>
+          <div class="section-controls">
+            <div class="mode-toggle">
+              <button class="btn-mode active" data-section="military" data-mode="daily">Daily</button>
+              <button class="btn-mode" data-section="military" data-mode="weekly">Weekly</button>
+            </div>
+            <button class="btn-section-refresh" data-section="military">&#8635; Refresh</button>
+          </div>
         </div>
-      </div>
-      <p class="fallback-notice" id="notice-military" hidden>No stories today — showing this week's top results.</p>
-      <div class="cards-row" id="grid-military">
-        <div class="section-loading"><div class="spinner"></div></div>
+        <p class="fallback-notice" id="notice-military" hidden>No stories today — showing this week's top results.</p>
+        <div class="cards-row" id="grid-military">
+          <div class="section-loading"><div class="spinner"></div></div>
+        </div>
       </div>
     </div>
 
     <!-- FUNDING -->
     <div class="news-section">
-      <div class="section-heading">
-        <div class="section-title-group">
-          <span class="section-icon">💰</span>
-          <h2>Federal Government Funding Projects</h2>
-          <span class="section-cap">Top 3 stories</span>
-        </div>
-        <div class="section-controls">
-          <div class="mode-toggle">
-            <button class="btn-mode active" data-section="funding" data-mode="daily">Daily</button>
-            <button class="btn-mode" data-section="funding" data-mode="weekly">Weekly</button>
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-title-group">
+            <span class="section-icon">💰</span>
+            <h2>Federal Government Funding Projects</h2>
+            <span class="section-cap">Top 3 stories</span>
           </div>
-          <button class="btn-section-refresh" data-section="funding">&#8635; Refresh</button>
+          <div class="section-controls">
+            <div class="mode-toggle">
+              <button class="btn-mode active" data-section="funding" data-mode="daily">Daily</button>
+              <button class="btn-mode" data-section="funding" data-mode="weekly">Weekly</button>
+            </div>
+            <button class="btn-section-refresh" data-section="funding">&#8635; Refresh</button>
+          </div>
         </div>
-      </div>
-      <p class="fallback-notice" id="notice-funding" hidden>No stories today — showing this week's top results.</p>
-      <div class="cards-row" id="grid-funding">
-        <div class="section-loading"><div class="spinner"></div></div>
+        <p class="fallback-notice" id="notice-funding" hidden>No stories today — showing this week's top results.</p>
+        <div class="cards-row" id="grid-funding">
+          <div class="section-loading"><div class="spinner"></div></div>
+        </div>
       </div>
     </div>
 
