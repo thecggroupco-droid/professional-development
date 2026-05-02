@@ -128,6 +128,39 @@ a { text-decoration: none; color: inherit; }
 }
 .btn-refresh-all:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
 
+/* ===== TAB BAR ===== */
+.tab-bar {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 72px;
+  z-index: 40;
+}
+
+.tab-inner {
+  display: flex;
+  gap: .25rem;
+  padding: 10px 0;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: .9rem;
+  color: var(--muted);
+  padding: .5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.tab-btn:hover { background: var(--bg-alt); color: var(--text); }
+.tab-btn.active {
+  background: var(--purple-light);
+  color: var(--purple);
+}
+
 /* ===== HERO BANNER ===== */
 .hero-banner {
   background: var(--grad);
@@ -396,6 +429,374 @@ main {
   color: rgba(255,255,255,.45);
 }
 .site-footer strong { color: rgba(255,255,255,.7); }
+
+/* ===== JOY COACHING PANEL ===== */
+.joy-container {
+  padding-top: 48px;
+  padding-bottom: 80px;
+  min-height: 70vh;
+}
+
+/* Welcome / Intro screens */
+.joy-welcome {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.joy-avatar {
+  width: 72px; height: 72px;
+  background: var(--grad);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: var(--shadow-md);
+}
+
+.joy-welcome h2 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -.03em;
+}
+
+.joy-welcome p {
+  font-size: 1rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.joy-skill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: center;
+}
+
+.joy-chip {
+  background: var(--purple-light);
+  color: var(--purple);
+  font-size: .8rem;
+  font-weight: 700;
+  padding: .35rem .9rem;
+  border-radius: 50px;
+}
+
+.joy-btn {
+  background: var(--grad);
+  border: none;
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: .95rem;
+  padding: .75rem 2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 2px 14px rgba(125,42,232,.35);
+  transition: opacity .15s, transform .15s, box-shadow .15s;
+}
+.joy-btn:hover { opacity: .88; transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+.joy-btn-secondary {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: .9rem;
+  padding: .65rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.joy-btn-secondary:hover { border-color: var(--purple); background: var(--purple-xlight); }
+
+/* Skill intro */
+.joy-skill-intro {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.joy-progress {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .5rem;
+}
+
+.joy-progress-label {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.joy-progress-dots {
+  display: flex;
+  gap: .4rem;
+}
+
+.joy-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--purple-light);
+}
+.joy-dot.active { background: var(--purple); }
+.joy-dot.done   { background: var(--purple-mid); }
+
+.joy-skill-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.joy-skill-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.joy-skill-card h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -.025em;
+}
+
+.joy-skill-card p {
+  font-size: .95rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* Practice screen */
+.joy-practice {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.joy-scenario {
+  background: var(--purple-xlight);
+  border: 1.5px solid var(--purple-light);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.joy-scenario-label {
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--purple);
+  margin-bottom: .6rem;
+}
+
+.joy-scenario p {
+  font-size: .95rem;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.joy-ask {
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: .75rem;
+}
+
+.joy-textarea {
+  width: 100%;
+  min-height: 160px;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: .95rem;
+  color: var(--text);
+  line-height: 1.7;
+  resize: vertical;
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+}
+.joy-textarea:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(125,42,232,.1);
+}
+.joy-textarea::placeholder { color: var(--muted-light); }
+
+.joy-word-count {
+  font-size: .75rem;
+  color: var(--muted-light);
+  text-align: right;
+  margin-top: -.5rem;
+}
+
+/* Feedback screen */
+.joy-feedback {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.joy-score-block {
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px 32px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.joy-score-num {
+  font-size: 3rem;
+  font-weight: 800;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.joy-score-stars {
+  font-size: 1.4rem;
+  letter-spacing: .1em;
+}
+
+.joy-score-label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: .2rem;
+}
+
+.joy-feedback-block {
+  background: #fff;
+  border-radius: 16px;
+  padding: 22px 26px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.joy-feedback-block .label {
+  font-size: .7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.joy-feedback-block .label.good  { color: #16a34a; }
+.joy-feedback-block .label.grow  { color: var(--purple); }
+.joy-feedback-block .label.model { color: #0369a1; }
+
+.joy-feedback-block p {
+  font-size: .9rem;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.joy-model-text {
+  font-size: .88rem;
+  color: var(--text-2);
+  line-height: 1.75;
+  background: var(--bg-alt);
+  border-left: 3px solid var(--purple);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  white-space: pre-line;
+}
+
+/* Summary screen */
+.joy-summary {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.joy-summary-score {
+  font-size: 5rem;
+  font-weight: 800;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.joy-summary h2 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -.025em;
+}
+
+.joy-summary p {
+  font-size: .95rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.joy-skill-scores {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.joy-skill-score-row {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+}
+
+.joy-skill-score-row .row-icon { font-size: 1.2rem; }
+.joy-skill-score-row .row-name {
+  flex: 1;
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.joy-skill-score-row .row-score {
+  font-weight: 800;
+  font-size: .9rem;
+  color: var(--purple);
+}
+
+.joy-btn-row {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 960px) {
